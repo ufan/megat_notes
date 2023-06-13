@@ -1,0 +1,138 @@
+#+columns: %30item %custom_id
+#+startup: show2levels
+
+# export setting
+#+latex_class_options:[lang=en]
+#+options: tags:nil
+
+# babel setting
+#+property: header-args :eval never-export :tangle test.pml
+
+#+Title: Dive into ~Gaudi~
+# #+Author: Yong Zhou
+# #+Email: zyong06@gmail.com
+
+* Overview
+Gaudi is a mature software project with continuous development ~20 years.
+The core team has the plan to 'modernize' its codebase due to latest progress both in
+hardware and software technology (most notably new C++ language features).
+However, the architecture is still well-designed even from contemporary point of view.
+Thus, it has been chosen as the recommended event processing framework of key4hep project.
+
+[[file:gaudi_ev.png]]
+
+For compatibility reason, Gaudi codebase causes confusion at first glance, i.e. different
+implementation of similar functions/interfaces/abstractions.
+Effort is needed to figure out the 'legacy' code and the 'modern' code.
+
+I will try the best to filter out the best practice of using Gaudi, in the sense that the feature will
+not be deprecated in a long term of view.
+But I'm learning it as well.
+
+* Building blocks
+** Class Design
+*** interface & interface id
+#+begin_src plantuml :file fig/interface_design.png
+  @startuml
+  class IInterface {
+          /'
+           ' +getInterfaceNames() : vector<string>
+           ' +addRef() : unsigned long
+           ' +release() : unsigned long
+           ' +queryInterface(id, void**) : StatusCode
+           ' +i_cast(id) : void*
+           '/
+          }
+  @enduml
+#+end_src
+
+#+RESULTS:
+[[file:fig/interface_design.png]]
+
+*** extend_interfaces<Interfaces...>
+
+*** extends<Base, Interfaces...>
+
+*** implement<Interfaces...>
+add member 'm_refCount'
+
+*** overload<T...>
+A simple wrapper class of functors for better use of ~std::visitor~ and ~std::variant~
+
+
+
+** Plugin Service and Factory
+
+** Value Semantics and Ownership Management
+*** idoms
+**** copy-swap and copy-elison
+   For copy assignment, copy-swap avoids the self-assignment bug and provides better exception
+   safety.
+   *copy-elison* (i.e. pass-by-value style assignment in this case) further improves the
+   performances in cases where rvalue on the right side.
+
+   See:
+   - [[https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Copy-and-swap][More C++ Idioms wikibook]]
+   - podio ObjBase implementation
+   - boost shared_ptr implementation
+**** reference-counting
+   See:
+   - [[https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Counted_Body][The example is almost the same as podio's data model implementation]]
+     
+**** handle-body (AKA: pointer to implementation)
+   See the previous section's link.
+   
+
+** Finite State Machine (FSM)
+
+* Implementations
+** Concurrency
+*** GaudiHive (MT)
+*** GaudiMP (MP)
+
+
+** Interfaces
+*** IService
+
+*** IProperty
+
+*** ITool
+
+*** IStateful
+
+
+* Python binding
+** ROOT dictionary
+
+* Modernization Effort
+** overview
+[[https://iopscience.iop.org/article/10.1088/1742-6596/898/4/042044][Gaudi Evolution for Future Chanllege]]
+
+- Task-based, intra-event parallelization: GaudiHive
+- Reentrant Algorithm
+  - A subset: Gaudi::Functional framework
+- 
+
+** Config2
+[[file:~/src/physics/key4hep/Gaudi/GaudiConfiguration/doc/README.md]]
+
+** Histogram
+[[https://gitlab.cern.ch/gaudi/Gaudi/-/merge_requests/1113/diffs#f623fa84d5ad96cef7c3cc45409a10f418592ad7][see this commit]]
+
+* Utilities
+| reverse           |
+| swab              |
+| finally           |
+| strcasecmp        |
+| LIKELY & UNLIKELY |
+|                   |
+* Techniques
+*** Curiously Recurring Template Pattern (CRTP)
+
+* Integration into downstream project
+** As separate external installation
+*** View-based version control?
+*** A package stack installation script which provides a view
+
+** As internal sub-project
+*** cmake external project?

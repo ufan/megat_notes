@@ -1,0 +1,45 @@
+#+latex_class_options:[lang=en]
+#+options: tags:nil
+
+#+Title: Dive into ~EDM4hep~
+# #+Author: Yong Zhou
+# #+Email: zyong06@gmail.com
+
+* Features
+
+* UserDataCollection
+ Collection of basic types for additional user data not defined in the EDM.
+ The data is stored in an std::vector<basic_type>. Supported are all basic types supported in
+ PODIO, i.e. float, double and 8-64 bit fixed size signed and unsigned integers - @see SupportedUserDataTypes.
+
+ #+begin_src c++
+   
+     void push_back(const BasicType& value)
+
+       std::vector<BasicType>& vec()
+ #+end_src
+
+* GenericParameters
+Contains maps : string -> SupportedType
+
+There are six types supported:
+- int & vector<int>
+- float & vector<float>
+- string & vector<string>
+
+The abstract view is like a collection of (string, SupportedType)
+
+#+caption I/O
+#+begin_src c++
+  GenericDataReturnType<T> GenericParameters::getValue(const std::string& key)
+
+  void GenericParameters::setValue(const std::string& key, T value)
+
+  size_t GenericParameters::getN(const std::string& key)
+
+  std::vector<std::string> GenericParameters::getKeys()
+#+end_src
+
+* IMetaDataProvider
+
+* VecMember vs Reference
