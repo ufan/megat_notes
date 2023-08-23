@@ -1457,11 +1457,11 @@ The literal 'Object' is sometimes used as template argument name.
 It's a logical concept without corresponding class definition, just like a C++20 =Concept=.
 ~NamedObject~ is a concrete class, providing named and titled implementation for inheriting ~Object~.
 
-~Handle<NamedObject>~ is a template class acting as the base class to access all named ~Object~ in DD4hep.
-It acts as a shared pointer of underlying ~NamedObject~.
+~Handle<T>~ is a template class acting as the base class to access all named ~Object~ in DD4hep.
+It acts as a shared pointer of underlying class ~T~.
 No reference counting [fn:1] is added, explicit destroy needed and the ownership is statically defined by the designer.
 ~Object~ in DD4hep is always passed and handled by a ~Handle~.
-~Handle<NamedObject>~ is aliased to ~Ref_t~.
+The spcecific type ~Handle<NamedObject>~ is aliased to ~Ref_t~.
 All ~Handle~ managed resources are created on heap, thus having static life span.
 
 By subclassing ~Handle<NamedObject>~, different intefaces may be designed to manipulate underlying data and expoesd
@@ -1558,6 +1558,7 @@ Most object ownership is solved in ~DetectorData~:
 #+RESULTS:
 [[file:fig/object_stratery_classes.png]]
 
+
 ** TODO Plugin Framework
 :PROPERTIES:
 :CUSTOM_ID: sec:plugin_framework
@@ -1607,6 +1608,7 @@ Two ~mutex~ are used in ~Registry~:
 - A member one in ~Registry~ to synchronize factory entry info registration and access
   - [[file:~/src/physics/key4hep/DD4hep/GaudiPluginService/Gaudi/Details/PluginServiceDetailsV2.h::mutable std::recursive_mutex m_mutex;]]
 
+    
 ** Extension Mechanism                                              :newpage:
 :PROPERTIES:
 :CUSTOM_ID: sec:extension
@@ -1702,11 +1704,24 @@ used in:
 - DDG4
 - DDEve
 
+  
 ** TODO Python binding
+
 
 ** TODO xml/json parser
 
+
+** ~InstanceCount~: helper for debugging memory leaks
+ - It manages two central table recording the total, max and current living instances of each class used in a running session.
+   - one table using ~std::typeinfo~ as key, the other using type name string as the key
+   - in reality, only the first table is used; the second table is empty
+ - It's a memory leakage tool, which can dump the table summary when the session ended
+ - It's activated by an environment variable =DD4HEP_TRACE=
+ - To register an entry in this table, invoke ~InstanceCount::increment(this)~ in the constructor; invoke ~InstanceCount::decrement(this)~ in
+   the destructor
+
 * Programming idioms
+
 * Footnotes
 
 [fn:5] The accumulated time, a client or a community may build a collection of =detector-builder plugin= for detector types in
